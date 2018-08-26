@@ -24,7 +24,7 @@ type logT struct {
 	logLevel    int
 	logDir      string
 	logFilePath string
-	userName    string
+	programName    string
 	f           *os.File
 	maxLogSize  int64
 }
@@ -72,7 +72,7 @@ func SetLogLevel(level string) {
 	}
 }
 
-func SetLogDir(logDir, userName string) {
+func SetLogDir(logDir, programName string) {
 	ctlog.logDir = logDir
-	ctlog.userName = userName + ".log"
+	ctlog.programName = programName + ".log"
 }

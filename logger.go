@@ -21,6 +21,13 @@ func Debugln(v ...interface{}) {
 	}
 }
 
+func Debugf(format string, v ...interface{}) {
+	if logLevel >= levelDEBUG {
+		log.SetPrefix("DEBUG\t")
+		log.Output(2, fmt.Sprintf(format, v...))
+	}
+}
+
 // level of info
 func Infoln(v ...interface{}) {
 	if logLevel >= levelINFO {
@@ -29,11 +36,38 @@ func Infoln(v ...interface{}) {
 	}
 }
 
+func Infof(format string, v ...interface{}) {
+	if logLevel >= levelINFO {
+		log.SetPrefix("INFO\t")
+		log.Output(2, fmt.Sprintf(format, v...))
+	}
+}
+
 // level of warning
 func Warningln(v ...interface{}) {
 	log.SetPrefix("WARN\t")
 	if logLevel >= levelWARN {
 		log.Output(2, fmt.Sprintln(v))
+	}
+}
+func Warningf(format string, v ...interface{}) {
+	log.SetPrefix("WARN\t")
+	if logLevel >= levelWARN {
+		log.Output(2, fmt.Sprintf(format, v...))
+	}
+}
+
+// level of error
+func Errorln(v ...interface{}) {
+	log.SetPrefix("ERROR\t")
+	if logLevel >= levelERROR {
+		log.Output(2, fmt.Sprintln(v))
+	}
+}
+func Errorf(format string, v ...interface{}) {
+	log.SetPrefix("ERROR\t")
+	if logLevel >= levelERROR {
+		log.Output(2, fmt.Sprintf(format, v...))
 	}
 }
 
@@ -45,6 +79,13 @@ func Fatalln(v ...interface{}) {
 	}
 }
 
+func Fatalf(format string, v ...interface{}) {
+	log.SetPrefix("FATAL\t")
+	if logLevel >= levelFATAL {
+		log.Output(2, fmt.Sprintf(format, v...))
+	}
+}
+
 func createLogDir() {
 	// ignore error
 	os.MkdirAll(ctlog.logDir, os.ModePerm)
@@ -52,13 +93,13 @@ func createLogDir() {
 
 func (l *logT) logFileName() (link string) {
 	// set log file name,defauld pid
-	if l.userName == "" {
-		l.userName = strconv.Itoa(os.Getpid()) + ".log"
+	if l.programName == "" {
+		l.programName = strconv.Itoa(os.Getpid()) + ".log"
 	}
 
 	t := time.Now()
 	fileName := fmt.Sprintf("%s.%04d%02d%02d-%02d%02d%02d.log",
-		l.userName,
+		l.programName,
 		t.Year(),
 		t.Month(),
 		t.Day(),
@@ -75,7 +116,7 @@ func (l *logT) createLogFile() (err error) {
 	}
 	createLogDirOnce.Do(createLogDir)
 	l.logFilePath = filepath.Join(l.logDir, l.logFileName())
-	sysLink := filepath.Join(l.logDir, l.userName)
+	sysLink := filepath.Join(l.logDir, l.programName)
 	l.f, err = os.Create(l.logFilePath)
 	if err != nil {
 		return fmt.Errorf("Create Log File Fail: %v", err)
